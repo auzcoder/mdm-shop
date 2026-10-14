@@ -9,11 +9,22 @@ services:
     container_name: phone_seller_frontend
     restart: unless-stopped
     environment:
+      # Markazdan beriladigan gateway kaliti (brauzerga chiqmaydi).
       SHOP_ID: ${SHOP_ID:?SHOP_ID must be issued by the central platform}
       SHOP_KEY: ${SHOP_KEY:?SHOP_KEY must be issued by the central platform}
-      # Faqat shu ikki qiymat Nginx shabloniga qo'yiladi; $host va $uri kabi
-      # Nginx o'zgaruvchilari buzilmasdan qoladi.
-      NGINX_ENVSUBST_FILTER: SHOP_ID|SHOP_KEY
+      # Do'konning o'z domeni — shu domenga avtomatik Let's Encrypt SSL olinadi.
+      SHOP_DOMAIN: ${SHOP_DOMAIN:?SHOP_DOMAIN must be set — this shop's own domain}
+      LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL:?LETSENCRYPT_EMAIL must be set}
+      # 1 = Let's Encrypt staging (test, rate-limitsiz). Haqiqiy SSL uchun 0.
+      CERTBOT_STAGING: ${CERTBOT_STAGING:-0}
     ports:
-      - "${FRONTEND_PORT:-8081}:80"
+      - "80:80"
+      - "443:443"
+    volumes:
+      # Sertifikatlar restart'lar orasida saqlanadi (rate-limitdan himoya).
+      - letsencrypt:/etc/letsencrypt
+      - certbot-webroot:/var/www/certbot
 
+volumes:
+  letsencrypt:
+  certbot-webroot:

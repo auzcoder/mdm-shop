@@ -16,9 +16,16 @@ RUN npm run build
 
 FROM nginx:1.27-alpine
 
-# Nginx konteyner ishga tushganda SHOP_ID va SHOP_KEY ni shu shablonga
-# qo'yadi. Ular build fayllariga yoki brauzer JavaScript'iga kirmaydi.
+# certbot — avtomatik Let's Encrypt SSL; openssl — vaqtinchalik self-signed;
+# gettext — envsubst (nginx shabloniga SHOP_* qiymatlarini qo'yish).
+RUN apk add --no-cache certbot openssl gettext
+
+# Entrypoint ishga tushganda nginx.conf.template ni render qiladi (SHOP_DOMAIN,
+# SHOP_ID, SHOP_KEY) va SHOP_DOMAIN uchun SSL sertifikatini oladi/yangilaydi.
 COPY nginx.conf.template /etc/nginx/templates/default.conf.template
+COPY docker-entrypoint.ssl.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
 COPY --from=build /app/dist /usr/share/nginx/html
 
-EXPOSE 80
+EXPOSE 80 443
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

@@ -1,6 +1,33 @@
+# Do'kon paneli — HTTPS (Let's Encrypt). Entrypoint ${SHOP_DOMAIN}, ${SHOP_ID},
+# ${SHOP_KEY} ni envsubst bilan qo'yadi; nginx $host/$uri kabilari tegilmaydi.
+
+# ── HTTP (80): ACME challenge + HTTPS'ga yo'naltirish ─────────────────
 server {
     listen 80;
-    server_name _;
+    server_name ${SHOP_DOMAIN};
+
+    # Let's Encrypt webroot tekshiruvi — shu yo'l ochiq qoladi.
+    location /.well-known/acme-challenge/ {
+        root /var/www/certbot;
+    }
+
+    location / {
+        return 301 https://$host$request_uri;
+    }
+}
+
+# ── HTTPS (443): do'kon paneli ───────────────────────────────────────
+server {
+    listen 443 ssl;
+    http2 on;
+    server_name ${SHOP_DOMAIN};
+
+    ssl_certificate     /etc/letsencrypt/live/${SHOP_DOMAIN}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/${SHOP_DOMAIN}/privkey.pem;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_session_cache shared:SSL:10m;
+    ssl_session_timeout 1d;
+
     root /usr/share/nginx/html;
     index index.html;
 
@@ -13,9 +40,6 @@ server {
     add_header Referrer-Policy "no-referrer" always;
     add_header Permissions-Policy "camera=(), microphone=(), geolocation=()" always;
     add_header Strict-Transport-Security "max-age=31536000" always;
-    # mdm.tayyor.app eski yuklangan logolar uchun vaqtinchalik ruxsat. Yangi
-    # logolar apple.tayyor.app orqali qaytadi. Cloudflare beacon faqat
-    # domenning ixtiyoriy Web Analytics skripti uchun ruxsat etilgan.
     add_header Content-Security-Policy "default-src 'self'; script-src 'self' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https://apple.tayyor.app https://mdm.tayyor.app; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https://cloudflareinsights.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'" always;
 
     # Brauzer faqat o'z domeni bilan gaplashadi. Markaziy serverga chiqishda
