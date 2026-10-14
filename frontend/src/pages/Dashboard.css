@@ -1,0 +1,32 @@
+/* ── Boshqaruv paneli (dashboard) — zamonaviy layout ───────────── */
+.dash { display: flex; flex-direction: column; gap: 20px; }
+
+.dash-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.dash-head h1 { margin: 0; }
+.dash-sub { margin: 5px 0 0; color: var(--text-faint); font-size: 13px; font-weight: 500; }
+
+/* KPI cards */
+.kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+.kpi-card { position: relative; overflow: hidden; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 17px 18px 16px; transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease; }
+.kpi-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--kpi, var(--primary)); }
+.kpi-card:hover { transform: translateY(-2px); box-shadow: 0 12px 28px -16px rgba(16,24,40,.35); border-color: color-mix(in srgb, var(--kpi, var(--primary)) 40%, var(--border)); }
+.kpi-top { display: flex; align-items: center; gap: 10px; }
+.kpi-icon { flex: 0 0 34px; width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; color: var(--kpi, var(--primary)); background: color-mix(in srgb, var(--kpi, var(--primary)) 13%, var(--surface)); }
+.kpi-label { font-size: 12.5px; font-weight: 600; color: var(--text-dim); }
+.kpi-value { margin-top: 13px; font-size: 25px; font-weight: 800; letter-spacing: -.02em; color: var(--text); line-height: 1.1; }
+.kpi-hint { margin-top: 5px; font-size: 11.5px; color: var(--text-faint); }
+.kpi-emerald { --kpi: #10b981; } .kpi-rose { --kpi: #ef4444; } .kpi-amber { --kpi: #f59e0b; } .kpi-blue { --kpi: #4f7cff; } .kpi-violet { --kpi: #a855f7; }
+
+/* Two-column main grid */
+.dash-grid { display: grid; grid-template-columns: 1.55fr 1fr; gap: 16px; align-items: start; }
+
+/* Panels */
+.dash .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+.dash .panel-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 15px 18px; border-bottom: 1px solid var(--border); }
+.dash .panel-head h2 { margin: 0; font-size: 14.5px; display: flex; align-items: center; gap: 8px; }
+.dash .panel-body { padding: 18px; }
+.dash .panel-body.attention-scroll { max-height: 440px; overflow-y: auto; padding: 8px; }
+.dash .panel-body.flush { padding: 8px; }
+
+@media (max-width: 1060px) { .dash-grid { grid-template-columns: 1fr; } .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .kpi-grid { grid-template-columns: 1fr; } .kpi-value { font-size: 23px; } }

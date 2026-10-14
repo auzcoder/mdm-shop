@@ -1,0 +1,58 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool
+*.out
+
+# Go workspace file
+go.work
+go.work.sum
+
+# Muhit fayllari va sirlar — HECH QACHON commit qilinmasin (TZ 12)
+.env
+.env.*
+!.env.example
+secrets/
+certs/
+backend/certs/
+mdm-certificates/
+*.cer
+*.crt
+*.csr
+*.req
+*.p7
+*.p7m
+*.plist
+*.plist.b64.p7
+dep_token.json
+dep_profile.json
+*.p12
+*.pem
+*.key
+*.mobileconfig
+*-service-account.json
+
+# Node
+node_modules/
+dist/
+.vite/
+*.tsbuildinfo
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Arxivlar sertifikat va tokenlarni gitignore qoidalaridan olib o'tadi
+*.zip

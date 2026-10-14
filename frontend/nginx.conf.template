@@ -1,0 +1,59 @@
+server {
+    listen 80;
+    server_name _;
+    root /usr/share/nginx/html;
+    index index.html;
+
+    gzip on;
+    gzip_types text/css application/javascript application/json image/svg+xml;
+    gzip_min_length 1024;
+
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-Frame-Options "DENY" always;
+    add_header Referrer-Policy "no-referrer" always;
+    add_header Permissions-Policy "camera=(), microphone=(), geolocation=()" always;
+    add_header Strict-Transport-Security "max-age=31536000" always;
+    # mdm.tayyor.app eski yuklangan logolar uchun vaqtinchalik ruxsat. Yangi
+    # logolar apple.tayyor.app orqali qaytadi. Cloudflare beacon faqat
+    # domenning ixtiyoriy Web Analytics skripti uchun ruxsat etilgan.
+    add_header Content-Security-Policy "default-src 'self'; script-src 'self' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https://apple.tayyor.app https://mdm.tayyor.app; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https://cloudflareinsights.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'" always;
+
+    # Brauzer faqat o'z domeni bilan gaplashadi. Markaziy serverga chiqishda
+    # Nginx SHOP_ID va SHOP_KEY ni qo'shadi; kalit JavaScript ichiga kirmaydi.
+    location /api/ {
+        proxy_pass https://apple.tayyor.app;
+        proxy_ssl_server_name on;
+        proxy_set_header Host apple.tayyor.app;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Shop-ID ${SHOP_ID};
+        proxy_set_header X-Shop-Key ${SHOP_KEY};
+    }
+
+    location /uploads/ {
+        proxy_pass https://apple.tayyor.app;
+        proxy_ssl_server_name on;
+        proxy_set_header Host apple.tayyor.app;
+    }
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    location = /index.html {
+        add_header Cache-Control "no-cache, must-revalidate" always;
+        add_header X-Content-Type-Options "nosniff" always;
+        add_header X-Frame-Options "DENY" always;
+        add_header Referrer-Policy "no-referrer" always;
+        add_header Permissions-Policy "camera=(), microphone=(), geolocation=()" always;
+        add_header Strict-Transport-Security "max-age=31536000" always;
+        add_header Content-Security-Policy "default-src 'self'; script-src 'self' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https://apple.tayyor.app https://mdm.tayyor.app; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https://cloudflareinsights.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'" always;
+    }
+
+    location /assets/ {
+        expires 1y;
+        add_header Cache-Control "public, immutable" always;
+        add_header X-Content-Type-Options "nosniff" always;
+    }
+}

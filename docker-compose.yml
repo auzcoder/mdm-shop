@@ -1,0 +1,19 @@
+services:
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_PUBLIC_URL: ${VITE_PUBLIC_URL:?VITE_PUBLIC_URL must point to the central MDM server}
+        VITE_PANEL_MODE: shop
+        VITE_GOOGLE_CLIENT_ID: ${GOOGLE_OAUTH_CLIENT_ID:-}
+    container_name: phone_seller_frontend
+    restart: unless-stopped
+    environment:
+      SHOP_ID: ${SHOP_ID:?SHOP_ID must be issued by the central platform}
+      SHOP_KEY: ${SHOP_KEY:?SHOP_KEY must be issued by the central platform}
+      # Faqat shu ikki qiymat Nginx shabloniga qo'yiladi; $host va $uri kabi
+      # Nginx o'zgaruvchilari buzilmasdan qoladi.
+      NGINX_ENVSUBST_FILTER: SHOP_ID|SHOP_KEY
+    ports:
+      - "${FRONTEND_PORT:-8081}:80"
+
