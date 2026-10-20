@@ -63,7 +63,33 @@ export default function Settings() {
   return <div className="shop-settings">
     <div className="page-head"><div><h1>Do‘kon sozlamalari</h1><p className="page-desc">Profil, to‘lov qoidalari va mijozlarga xabarnomalar.</p></div><Link className="btn" to="/audit">Amallar tarixi →</Link></div>
     {(profile.isError || !settings) && <Alert kind="error">Ma’lumotlarni yuklab bo‘lmadi. Sahifani yangilang.</Alert>}
-    <section className="shop-profile-card"><div className="shop-profile-avatar">{profile.data?.logo_url ? <img src={profile.data.logo_url} alt="Do‘kon logosi" /> : profile.data?.name?.slice(0, 1)}</div><div><h2>{profile.data?.project_name || profile.data?.name}</h2><p>{profile.data?.phone || 'Telefon kiritilmagan'} · {profile.data?.address || 'Manzil kiritilmagan'}</p><small>Do‘kon nomi, domeni va logosi markaziy administrator tomonidan boshqariladi.</small></div></section>
+    <section className="shop-profile-card">
+      <div className="shop-profile-avatar">{profile.data?.logo_url ? <img src={profile.data.logo_url} alt="Do‘kon logosi" /> : profile.data?.name?.slice(0, 1)}</div>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <h2>{profile.data?.project_name || profile.data?.name}</h2>
+        <p>{profile.data?.phone || 'Telefon kiritilmagan'} · {profile.data?.address || 'Manzil kiritilmagan'}</p>
+        <small>Do‘kon nomi, domeni va logosi markaziy administrator tomonidan boshqariladi.</small>
+        {profile.data?.add_url && (
+          <div style={{ marginTop: 14, maxWidth: 640 }}>
+            <Field label="Apple Configurator MDM Server URL">
+              <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+                <input className="input mono" value={profile.data.add_url} readOnly />
+                <button
+                  type="button"
+                  className="btn"
+                  onClick={() => {
+                    void navigator.clipboard?.writeText(profile.data.add_url)
+                    success('Nusxalandi', 'Configurator havolasi buferga olindi')
+                  }}
+                >
+                  Nusxa
+                </button>
+              </div>
+            </Field>
+          </div>
+        )}
+      </div>
+    </section>
     <div className="tab-nav" aria-label="Sozlamalar bo‘limlari"><button className={`tab-btn ${tab === 'general' ? 'active' : ''}`} onClick={() => setTab('general')}>To‘lov qoidalari</button><button className={`tab-btn ${tab === 'templates' ? 'active' : ''}`} onClick={() => setTab('templates')}>Xabarnomalar</button></div>
     {tab === 'general' ? <section className="settings-card"><div className="settings-card-header"><div><h2>To‘lov va kechikishlar</h2><p className="settings-card-desc">Yangi shartnomalar uchun do‘kon qoidalari.</p></div></div>
     <div className="shop-settings-fields"><Field label="Imtiyozli muddat (kun)"><input className="input" type="number" min="0" step="1" disabled={!editable} value={values.default_grace_days} onChange={e => setValues({ ...values, default_grace_days: e.target.value })} /></Field><Field label="Kunlik penya (%)"><input className="input" type="number" min="0" step="0.01" disabled={!editable || values.penalty_enabled !== 'true'} value={values.penalty_daily_percent} onChange={e => setValues({ ...values, penalty_daily_percent: e.target.value })} /></Field></div>
